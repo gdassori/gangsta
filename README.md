@@ -7,7 +7,7 @@ requirements to test:
 
 - insight-api that runs on a replace-by-fee patched node (standard nodes got Code -25)
 - text editor to change 'insight.bitpay.com' with your node host
-- blockr needs to be app, entire app rely on its api
+- blockr.io needs to be up, entire app rely on its api
 
 
 Todo: 
