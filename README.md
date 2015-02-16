@@ -9,12 +9,15 @@ requirements to test:
 - text editor to change 'insight.bitpay.com' with your node host
 - blockr.io needs to be up, entire app rely on its api
 
+demo: http://gangsta.strangled.net/ (hosted code is not safe)
+
 
 Todo: 
 - testing :-)
 - switch entire app to insight
 - bugfix
 - less (zero?) third-party api dependency
+- generally, more development
 
 
 Bug reports, feedback, forks, pull reqs, blames, everything is appreciated.
