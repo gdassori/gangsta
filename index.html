@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <title>gangsta, bitcoin replace-by-fee double spend tool</title>
+        <meta name="generator" content="Bootply" />
+        <meta name="keywords" content="bitcoin, double spend, replace-by-fee, double spending, gdassori, guido dassori" />
+        <meta name="author" content="gdassori">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <!--[if lt IE 9]>
+            <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+        <link href="css/styles.css" rel="stylesheet">
+        <link href="css/custom.css" rel="stylesheet">
+        <!-- <script src="js/require.js"></script> -->
+        <script src="js/bitcoinjs.min.js"></script>
+        <script src="/js/jquery.min.js"></script>
+        <script src="/js/jquery-playSound.js"></script>
+    </head>
+    <body>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-1">
+                <div class="row">
+                    <img src="/img/gangsta.png" width="100" height="80" style="margin-top:25px">
+                </div>
+            </div>
+            <div class="col-lg-10">
+                <div class="row" style="padding-left:10px">
+                    <h1>gangsta</h1>
+                    <h3>bitcoin double spending for the masses</h3>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+        <div class="row">
+            <div class="col-lg-12">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#A" data-toggle="tab" class="overviewTab_btn">Overview</a></li>
+                    <li><a href="#B" data-toggle="tab" class="walletTab_btn">Wallet</a></li>
+                    <li><a href="#C" data-toggle="tab" class="transactionsTab_btn">Transactions</a></li>
+                    <li><a href="#D" data-toggle="tab" class="editTransactionTab_btn">Edit Transaction</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="tabbable">
+             <div class="tab-content">
+              <div class="tab-pane active gangstaPanel" id="A">
+                <div class="row text-center" style="margin-top: 20px; margin-bottom:20px;">
+                    <img src="/img/magic_internet_money.gif">
+                </div>
+                <div class="row" id="first_runsta">
+                    <div class="col-lg-12">
+                        <div class="well text-center">
+                            <h2></h2>
+                            <p><strong>gangsta</strong> is a small app that makes everyone able to double spend a Bitcoin transaction on a replace-by-fee patched node.</p>
+                            <hr>
+                            <p>Import your private keys into <strong>gangsta</strong> from virtually any single-sig wallet</p>
+                            <p>(multibit, electrum, singlesig darkwallet, bitcoincore, armory, blockchain.info)</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row text-center">
+                    <div class="col-lg-4"></div>
+                    <div class="col-lg-4" style="margin-top:40px">
+                        <a class="btn btn-lg btn-block btn-primary" data-toggle="modal" href="#myModal">Import keys</a>
+                    </div>
+                </div>
+              </div>
+              <div class="tab-pane gangstaPanel" id="B">
+                  <div class="row empty_wallet" style="min-height:350px">
+                        <h3 style="margin-top: 200px" class="text-center">
+                            <a href="#" class="empty_claim">Import your keys first</a>
+                        </h3>
+                    </div>
+                  <div class="row wallet_row hidden">
+                    <div class="col-lg-12">
+                        <h2>Wallet</h2>
+                        <p>Transactions n° 4, 8, 15, 16, 23 & 42 wins a first class flight ticket</p>
+                        <hr>
+                    </div>
+                    <hr>
+                    <div class="col-md-3">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">General status</div>
+                            <div class="panel-body">
+                                <p>Keys imported: <span style="display:inline" class="wallet_keys_imported">0</span></p>
+                                <p>Last check: <span style="display:inline" class="wallet_sync_status"> never</span> </p>
+                                <p>Balance: <span style="display:inline" class="wallet_balance">0</span> BTC</p>
+                                <p>Block: #<span style="display:inline" class="blockchain_current_block">0</span></p>
+                                <p>Source: <a href="#">blockr.io</a></p>
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-error" style="width: 30%">working...</div>
+                                </div>
+                                <p><hr></p>
+                                <p><a class="btn btn-block btn-primary" data-toggle="modal" >Forget keys</a></p>
+                                <p><a class="btn btn-block force_check btn-default" data-toggle="modal" >Refresh data <i class="glyphicon glyphicon-refresh"></i></a></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <table class="table table-bordered table-striped table-hover">
+                            <thead>
+                              <tr>
+                                  <th>#</th>
+                                  <th>Public key</th>
+                                  <th>Txs</th>
+                                  <th>Balance</th>
+                                  <th>Spent unconfirmed</th>
+                              </tr>
+                            </thead>
+                            <tbody class="wallet_tbody">
+                            </tbody>
+                          </table>
+                    </div>
+                </div>
+              </div>
+              <div class="tab-pane gangstaPanel" id="C">
+                  <div class="col-lg-12">
+                    <div class="row empty_transactions" style="min-height:350px">
+                        <h3 style="margin-top: 200px" class="text-center">
+                            <a href="#" class="empty_claim">Import your keys first</a>
+                        </h3>
+                    </div>
+                    <div class="row transactions_row hidden">
+                        <h2>Transactions</h2>
+                        <p>Transactions are shown up to 200 per type (conf \ 0conf, max 400) due api limitations</p>
+                        <hr>
+                        <div class="row">
+                           <div class="col-lg-12 no_transactions" style="min-height:350px">
+                             <h3 style="margin-top: 150px" class="text-center">
+                                <p class="no_transactions_claim ">No transactions for the given keys</p>
+                            </h3>
+                          </div>
+                          <div class="col-lg-12 transactions_tables hidden">
+                          </div>
+                         </div>
+                         <div class="row hidden" id="address_table_view">
+                           <div class="col-md-12">
+                              <h4 class="address">Address: 141zGWjsJhnvzjPQsRVKYM6VPsmv9yPYVR</h4>
+                              <table class="table table-bordered table-striped table-hover">
+                                <thead>
+                                  <tr>
+                                      <th>#</th>
+                                      <th>Date</th>
+                                      <th>Transaction hash</th>
+                                      <th>Amount</th>
+                                      <th width="20%">Confirmations</th>
+                                  </tr>
+                                </thead>
+                                <tbody class="transactions_tbody">
+                                </tbody>
+                              </table>
+                              <hr>
+                           </div>
+                         </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="tab-pane gangstaPanel" id="D">
+                  <div class="col-lg-12">
+                      <div class="row empty_transaction_edit" style="min-height:350px">
+                        <h3 style="margin-top: 200px" class="text-center">
+                            <a href="#" class="empty_claim">Import your keys first</a>
+                        </h3>
+                      </div>
+                      <div class="row">
+                          <div class="col-lg-12 editTransaction_row hidden">
+                          </div>
+                          </div>
+                      <div class="row hidden" id="transaction_editor_view">
+                            <h2>Edit transaction</h2>
+                            <p class="tx_id"></p>
+                            <hr>
+                            <div class="row">
+                               <div class="col-lg-12">
+                                 <div class="panel panel-default">
+                                    <div class="panel-body">
+                                       <div class="row">
+                                           <div class="col-lg-3">
+                                               <h4>Amount: <span style="display:inline" class="tx_amount"></span> BTC</h4>
+                                               <h4>Available: <span style="display:inline" class="tx_available"></span> BTC</h4>
+                                           </div>
+                                           <div class="col-lg-3">
+                                               <h4>Confirmed: <span style="display:inline" class="tx_status"></span></h4>
+                                           </div>
+                                           <div class="col-lg-3">
+                                               <div class="col-md-2">
+                                                   <h4>Fee</h4>
+                                               </div>
+                                               <div class="col-md-8">
+                                                   <input type="text" class="tx_fee form-control input-xlarge" value="0.0001" style="margin-top:2px">
+                                               </div>
+                                           </div>
+                                           <div class="col-lg-3">
+                                               <h4>Seen: <span style="display:inline" class="tx_seen"></span></h4>
+                                           </div>
+                                       </div>
+                                   </div>
+                                </div>
+                            </div>
+                          </div>
+                          <div class="row">
+                              <div class="col-lg-12">
+                                  <p>Destinations addresses and fee amount (increase for a replace-by-fee) can be changed.</p>
+                                  <p>To increase the fee, needed amount is deducted from the change amount, if available, or from the other keys provided, if needed and available.</p>
+                              </div>
+                          </div>
+                          <div class="row">
+                              <div class="col-lg-12">
+                                  <h3>Outputs</h3>
+                                  <hr>
+                                  <table class="vouts_table table table-bordered table-striped table-hover">
+                                    <thead>
+                                      <tr>
+                                        <th>#</th>
+                                        <th>Address</th>
+                                        <th>Code</th>
+                                        <th>Value</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody class="vouts_tbody">
+                                    </tbody>
+                                  </table>
+                              </div>
+                          </div>
+                           <div class="row">
+                              <div class="col-lg-9"></div>
+                              <div class="col-lg-3"><button class="buildTx_btn btn btn-success btn-block">Build, Sign, Show</button></div>
+                          </div>
+                          <div class="row">
+                              <div class="col-lg-12">
+                                  <h3>Inputs</h3>
+                                  <hr>
+                                  <table class="outputs_table table table-bordered table-striped table-hover">
+                                    <thead>
+                                      <tr>
+                                        <th>#</th>
+                                          <th>Type</th>
+                                          <th>Addr</th>
+                                          <th>Prev_tx</th>
+                                          <th>Value</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody class="vins_tbody">
+                                      <tr  class="vmid">
+                                          <td>1</td>
+                                          <td>0</td>
+                                          <td width="30%">14RrW4vWsVGYJpixQ61BaTpta28ZtEL2rw</td>
+                                          <td>40d55531a8dbec518a571c86683f7c995d042bace122f770ae06df4bf621dee9</td>
+                                          <td>-1.2e-5</td>
+                                      </tr>
+                                      <tr  class="vmid">
+                                          <td>1</td>
+                                          <td>0</td>
+                                          <td width="30%">14RrW4vWsVGYJpixQ61BaTpta28ZtEL2rw</td>
+                                          <td>40d55531a8dbec518a571c86683f7c995d042bace122f770ae06df4bf621dee9</td>
+                                          <td>-1.2e-5</td>
+                                      </tr>
+                                    <tr  class="vmid">
+                                          <td>1</td>
+                                            <td>0</td>
+                                          <td width="30%">14RrW4vWsVGYJpixQ61BaTpta28ZtEL2rw</td>
+                                          <td>40d55531a8dbec518a571c86683f7c995d042bace122f770ae06df4bf621dee9</td>
+                                          <td>-1.2e-5</td>
+                                      </tr>
+                                    <tr  class="vmid">
+                                          <td>1</td>
+                                            <td>0</td>
+                                          <td width="30%">14RrW4vWsVGYJpixQ61BaTpta28ZtEL2rw</td>
+                                          <td>40d55531a8dbec518a571c86683f7c995d042bace122f770ae06df4bf621dee9</td>
+                                          <td>-1.2e-5</td>
+                                      </tr>
+
+                                    </tbody>
+                                  </table>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+            </div>
+         </div>
+    </div>
+    <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h3 id="myModalLabel">import keys</h3>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <textarea class="form-control input-xlarge" id="keys_import_area" rows="15" placeholder="paste private keys export here"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn" data-dismiss="modal" id="cancel_import_btn" aria-hidden="true">Cancel</button>
+                        <button class="btn btn-primary" id="import_keys_btn">Import</button>
+                    </div>
+                 </div>
+              </div>
+          </div>
+       </div>
+    </div>
+    <hr>
+    <div class="footer">
+        <div class="row" style="background-color:#e3e3e3; min-height:200px; margin-top:50px; padding: 100px;">
+            <div class="col-md-12">
+                <div class="col-md-4"></div>
+                <div class="col-md-5"><small>
+                    <p><strong>gangsta</strong>, double spending tool, that aim to work with replace-by-fee patched nodes.</p>
+                    <p>Please replace insight hostname with a patched node and report tests on <a href="http://github.com/gdassori/gangsta">Github</a>.</p>
+                </small></div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script> -->
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/app.js"></script>
+    </body>
+</html>
