@@ -1,5 +1,5 @@
 # gangsta
-bitcoin replace-by-fee double spend tool, gdassori 2015
+bitcoin replace-by-fee double spend tool
 
 gangsta, bitcoin double spend tool aimed to work with replace-by-fee patched nodes
 
