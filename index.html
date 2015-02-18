@@ -68,7 +68,7 @@
                 <div class="row text-center">
                     <div class="col-lg-4"></div>
                     <div class="col-lg-4" style="margin-top:40px">
-                        <a class="btn btn-lg btn-block btn-primary" data-toggle="modal" href="#myModal">Import keys</a>
+                        <a class="btn btn-lg btn-block btn-primary" data-toggle="modal" href="#keysModal">Import keys</a>
                     </div>
                 </div>
               </div>
@@ -231,7 +231,9 @@
                           </div>
                            <div class="row">
                               <div class="col-lg-9"></div>
-                              <div class="col-lg-3"><button class="buildTx_btn btn btn-success btn-block">Build, Sign, Show</button></div>
+                              <div class="col-lg-3">
+                                  <a href="#txModal" class="buildTx_btn btn btn-block btn-success pushTx" data-toggle="modal">Build, sign & show</a>
+                              </div>
                           </div>
                           <div class="row">
                               <div class="col-lg-12">
@@ -257,12 +259,12 @@
             </div>
          </div>
     </div>
-    <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div id="keysModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="keysModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                        <h3 id="myModalLabel">import keys</h3>
+                        <h3 id="keysModalLabel">import keys</h3>
                     </div>
                     <div class="modal-body">
                         <div class="row">
@@ -274,6 +276,72 @@
                     <div class="modal-footer">
                         <button class="btn" data-dismiss="modal" id="cancel_import_btn" aria-hidden="true">Cancel</button>
                         <button class="btn btn-primary" id="import_keys_btn">Import</button>
+                    </div>
+                 </div>
+              </div>
+          </div>
+       </div>
+    </div>
+    <div id="txModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="txModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal70">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h3 id="txModalLabel">Transaction replacement</h3>
+                    </div>
+                    <div class="modal-body" style="overflow-x: hidden !important; overflow-y: scroll !important; min-height: 300px">
+                        <div class="row txDetails">
+                            <div class="col-md-12">
+                                <h5>Raw hex</h5>
+                                <textarea class="form-control input-xlarge tx_raw_hex" rows="3" placeholder="transaction raw hex"></textarea>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row txDecoded">
+                            <div class="col-md-12">
+                                <h5>Decoded</h5>
+                                <textarea class="form-control input-xlarge tx_JSON" rows="9" placeholder="decoded transaction"></textarea>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row txHash">
+                            <div class="col-md-12">
+                                <h5>Hash <span style="display:inline" class="tx_pushed"></h5>
+                                <textarea class="form-control input-xlarge tx_hash" rows="1" placeholder="transaction hash"></textarea>
+                            </div>
+                        </div>
+                        <div class="row txResponse hidden">
+                            <div class="col-md-12">
+                                <div class="panel">
+  		                            <div class="panel-heading">Transaction broadcasting</div>
+  		                            <div class="panel-body">
+                                        <div class="hidden pos_response">
+                                            <p class="pos_response">Your transaction has been accepted by gangsta node. Follow both of them on the blockchain, to see which one will be mined.</p>
+                                            <p class="pos_response_tx1"><a href="#" target="_blank">Original transaction: <span style="display:inline"></span></a></p>
+                                            <p class="pos_response_tx2"><a href="#" target="_blank">Replacement transaction: <span style="display:inline"></span></a></p>
+                                        </div>
+                                        <div class="hidden neg_response">
+                                            <p>Transaction <span style="display:inline"></span> has been rejected by gangsta node. Check the <a href="#FAQ">FAQ</a> for possible reasons</p>
+                                        </div>
+                                    </div>
+	                            </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-lg-4"></div>
+                                <div class="col-lg-4">
+                                    <a class="btn btn-block btn-warning pushTx" disabled="disabled" data-toggle="modal">Push transaction</a>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:20px">
+                                <div class="col-lg-12">
+                                    <p><small>Transaction will be pushed thru a replace-by-fee node, if available.</small></p>
+                                </div>
+                        </div>
                     </div>
                  </div>
               </div>

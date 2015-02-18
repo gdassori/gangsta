@@ -1,14 +1,14 @@
 // gangsta double spending tool
-// gd, feb 2015
-//TODO: Add inputs from other keys, OP_RETURN
-
+// github.com/gdassori/gangsta
 
 gangsta = new Object
 
 gangsta.init = function() {
+    gangsta.debug = false
+    gangsta.errors = []
     gangsta.wallet = []
-    gangsta.transactions = {}
-    gangsta.data = {'flood_alerted': 0}
+    gangsta.transactions = {"5b4b0ad36df8ee3ed7d1ac901af59e5aa3cb205ca254c900f6ff9c5302210439":{"at_block":999999,"transaction":{"status":"success","data":{"tx":"5b4b0ad36df8ee3ed7d1ac901af59e5aa3cb205ca254c900f6ff9c5302210439","block":0,"confirmations":0,"time_utc":"2015-02-18T14:53:17Z","is_coinbased":false,"trade":{"vins":[{"address":"1GszQGCtvsG7jVtfkdKj73PHvuA1jo9Tws","amount":-0.001,"n":0,"type":"0","vout_tx":"b9029e7feff4cc78cfe5dfdb1afdc7f327234b84722c4a5d40d1a98675b2b061","is_zerotx":false,"is_unknown":false}],"vouts":[{"address":"185XkM8NzJMZvMdZF7ZEeVAu8dprtHyWfV","amount":0.0001,"n":0,"type":1},{"address":"141zGWjsJhnvzjPQsRVKYM6VPsmv9yPYVR","amount":0.0008,"n":1,"type":1}]},"vins":[{"address":"1GszQGCtvsG7jVtfkdKj73PHvuA1jo9Tws","amount":"-0.00100000","n":0,"type":"0","vout_tx":"b9029e7feff4cc78cfe5dfdb1afdc7f327234b84722c4a5d40d1a98675b2b061","is_zerotx":false,"is_unknown":false}],"vouts":[{"address":"185XkM8NzJMZvMdZF7ZEeVAu8dprtHyWfV","amount":"0.00010000","n":0,"type":1},{"address":"141zGWjsJhnvzjPQsRVKYM6VPsmv9yPYVR","amount":"0.00080000","n":1,"type":1}],"fee":"0.00010000","days_destroyed":false,"is_unconfirmed":true,"extras":null},"code":200,"message":""}},"tmp":{"at_block":344054,"transaction":{"status":"success","data":{"tx":"5b4b0ad36df8ee3ed7d1ac901af59e5aa3cb205ca254c900f6ff9c5302210439","block":0,"confirmations":0,"time_utc":"2015-02-18T14:53:17Z","is_coinbased":false,"trade":{"vins":[{"address":"1GszQGCtvsG7jVtfkdKj73PHvuA1jo9Tws","amount":-0.001,"n":0,"type":"0","vout_tx":"b9029e7feff4cc78cfe5dfdb1afdc7f327234b84722c4a5d40d1a98675b2b061","is_zerotx":false,"is_unknown":false}],"vouts":[{"address":"185XkM8NzJMZvMdZF7ZEeVAu8dprtHyWfV","amount":0.0001,"n":0,"type":1},{"address":"141zGWjsJhnvzjPQsRVKYM6VPsmv9yPYVR","amount":0.0008,"n":1,"type":1}]},"vins":[{"address":"1GszQGCtvsG7jVtfkdKj73PHvuA1jo9Tws","amount":-100000,"n":0,"type":"0","vout_tx":"b9029e7feff4cc78cfe5dfdb1afdc7f327234b84722c4a5d40d1a98675b2b061","is_zerotx":false,"is_unknown":false}],"vouts":[{"address":"185XkM8NzJMZvMdZF7ZEeVAu8dprtHyWfV","amount":10000,"n":0,"type":1},{"address":"141zGWjsJhnvzjPQsRVKYM6VPsmv9yPYVR","amount":80000,"n":1,"type":1}],"fee":10000,"days_destroyed":false,"is_unconfirmed":true,"extras":null},"code":200,"message":""},"available":"0.00080000"}}
+    gangsta.data = {'flood_alerted': 0, 'backend_available': false}
 
 }
 gangsta.validatePubKey = function(addr) {
@@ -110,7 +110,6 @@ gangsta.get_wallet_details = function(cb) {
     })
 }
 gangsta.get_current_block = function() {
-    // ui stuff inside
     var url = 'http://btc.blockr.io/api/v1/block/info/last'
     $.ajax(url).success(function(res) {
         if (res['status'] == 'success') {
@@ -133,7 +132,6 @@ gangsta.get_current_block = function() {
         gangsta.handleErrors(e)
     })
 }
-
 gangsta.on_new_block = function() {
     console.log('new block')
     var addrs = gangsta.addresses_with_unconfirmed_txs()
@@ -141,10 +139,9 @@ gangsta.on_new_block = function() {
         gangsta.show_transactions(false, addrs)
         gangsta.set_last_check(true)
     })
-    // check on prev unconfirmed fetched txs (only on wallet, not txs details, which will be fetched, if needed,
+    // check on prev unconfirmed fetched txs (only on wallet, not txs details, which will be fetched, if needed),
     // when the tx is shown cause of 'at_block' param
 }
-
 gangsta.addresses_with_unconfirmed_txs = function() {
     var addresses_involved = []
     $.each(gangsta.wallet, function() {
@@ -181,7 +178,6 @@ gangsta.unconfirmed_become_confirmed = function(txid, addr) {
         })
     }
 }
-
 gangsta.drop_transaction_from_wallet = function(addr, txid) {
     var i = 0
     var index = gangsta.getAddressIndex(addr)
@@ -192,7 +188,6 @@ gangsta.drop_transaction_from_wallet = function(addr, txid) {
         }
     })
 }
-
 gangsta.get_transactions = function(addrs, cb) {
     if (addrs) {
         var addrs_with_txs = addrs
@@ -280,7 +275,6 @@ gangsta.get_tx = function(txid, cb) {
         gangsta.handleErrors('error fetching transaction: ' + e)
     })
 }
-
 gangsta.check_unconfirmed_on_addresses = function(single_call) {
     // loop looking for new txs
     // TODO announcer with crossbar backend ?
@@ -365,12 +359,10 @@ gangsta.check_unconfirmed_on_addresses = function(single_call) {
         }, 120000)
     }
 }
-
 gangsta.on_new_transaction = function(addr) {
     console.log('new tx on ' + addr)
     gangsta.show_transactions(true, [addr,])
-};
-
+}
 gangsta.apply_editor_logic = function(txid, container, avail_bkp) {
     gangsta.transactions['tmp'] = {}
     console.log(container.find('.tx_available').text())
@@ -444,16 +436,8 @@ gangsta.apply_editor_logic = function(txid, container, avail_bkp) {
     container.find(".buildTx_btn").unbind().on('click', function() {
         gangsta.transactions['tmp']['tx_obj'] = gangsta.create_unsigned_tx_object(gangsta.transactions['tmp']['transaction'])
         gangsta.transactions['tmp']['tx_obj'] = gangsta.sign_tx(gangsta.transactions['tmp']['tx_obj'])
-        rawtx = gangsta.transactions['tmp']['tx_obj']['obj'].build().toHex()
-        alert('not ready yet, check console for tx hex, read sources see what\'s happen')
-        $.ajax('http://insight.bitpay.com/api/tx/send', {"rawtx": rawtx}).success(function(res) {
-            //TODO: Handle response
-            //FIXME: Code -25 until replace with a replace-by-fee enabled node.
-            console.log(res)
-        }).error(function(e) {
-            console.log(e)
-        })
-        console.log(rawtx)
+        var tx = gangsta.transactions['tmp']['tx_obj']['obj'].build()
+        gangsta.populate_tx_modal(tx)
     })
 }
 gangsta.edit_transaction = function(txid, dont_popup) {
@@ -466,7 +450,6 @@ gangsta.edit_transaction = function(txid, dont_popup) {
         })
     }
 }
-
 gangsta.create_unsigned_tx_object = function(source) {
     if (!source['data'].hasOwnProperty('vouts') && !source['data'].hasOwnProperty('vins')) return false
     var txdict = {'vin_sources':[]}
@@ -479,7 +462,7 @@ gangsta.create_unsigned_tx_object = function(source) {
         txobj.addOutput(this['address'], this['amount'])
     })
     if (source['data'].hasOwnProperty('message') && source['data']['message'].length > 0) {
-
+        //TODO OP_RETURN
     }
     if (txobj) {
         txdict['status'] = 'success'
@@ -489,7 +472,6 @@ gangsta.create_unsigned_tx_object = function(source) {
     }
     return txdict
 }
-
 gangsta.sign_tx = function(txdict) {
     var txobj = txdict['obj']
     i = 0
@@ -500,7 +482,33 @@ gangsta.sign_tx = function(txdict) {
     txdict['obj'] = txobj
     return txdict
 }
-
+gangsta.decode_tx = function(rawtx, cb, eb) {
+    console.log(rawtx)
+    //todo: js decoder
+    $.ajax({type: 'POST', url: '/decodeTx/', data: {"rawtx": rawtx}}).success(function(res) {
+        console.log(res)
+        if (res['status'] == 'success') {
+            cb(res)
+        } else {
+            eb(res)
+        }
+    }).error(function(e) {
+        eb(e)
+    })
+}
+gangsta.push_tx = function(rawtx, cb, eb) {
+    console.log(rawtx)
+    $.ajax({type: 'POST', url: '/pushTx/', data: {"rawtx": rawtx}}).success(function(res) {
+        console.log(res)
+        if (res['status'] == 'success') {
+            cb(res['txid'])
+        } else {
+            eb(res)
+        }
+    }).error(function(e) {
+        eb(e)
+    })
+}
 
 // ui stuff
 gangsta.show_transactions = function(clean, addrs) {
@@ -716,6 +724,65 @@ gangsta.update_show_edit_transaction = function(txid) {
     if (!tx['is_unconfirmed']) container.find('.buildTx_btn').attr('disabled', true)
 }
 
+gangsta.populate_tx_modal = function(tx) {
+    decode_cb = function(res) {
+        var m = $("#txModal")
+        var decoded = JSON.stringify(res['json'], undefined, 2)
+        m.find('.tx_JSON').val(decoded)
+        m.find('.pushTx').attr('disabled', false)
+        gangsta.data['backend_available'] = true
+    }
+    decode_eb = function(e) {
+        $("#txModal").find('.tx_JSON').attr('disabled', true).attr('placeholder', 'unable to contact decode/push API, use sendrawtransaction on a bitcoind patched node, instead, check FAQ')
+        gangsta.handleErrors(e)
+    }
+    push_cb = function(txid) {
+        gangsta.transactions['tmp']['pushed'] = true
+        var m = $("#txModal")
+        m.find('.txHash').addClass('hidden')
+        m.find('.txResponse').removeClass('hidden')
+        m.find('.panel').removeClass('panel-danger')
+        m.find('.panel').addClass('panel-success')
+        m.find('.pos_response').removeClass('hidden')
+        m.find('.neg_response').addClass('hidden')
+        m.find('.pos_response_tx1').find('span').text(gangsta.transactions['tmp']['transaction']['data']['tx'])
+        m.find('.pos_response_tx1').find('a').attr('href', 'http://blockchain.info/tx/'+gangsta.transactions['tmp']['transaction']['data']['tx'])
+        m.find('.pos_response_tx2').find('span').text(txid)
+        m.find('.pos_response_tx2').find('a').attr('href', 'http://blockchain.info/tx/info/'+txid)
+        m.find(".pushTx").attr('disabled', true)
+    }
+    push_eb = function(e) {
+        gangsta.transactions['tmp']['pushed'] = false
+        var m = $("#txModal")
+        m.find('.txHash').addClass('hidden')
+        m.find('.txResponse').removeClass('hidden')
+        m.find('.panel').removeClass('panel-success')
+        m.find('.panel').addClass('panel-danger')
+        m.find('.pos_response').addClass('hidden')
+        m.find('.neg_response').removeClass('hidden')
+        m.find('.neg_response_tx').find('span').text($(".tx_hash").val())
+        gangsta.handleErrors(e)
+    }
+    var m = $("#txModal")
+    m.find(".tx_raw_hex").val(tx.toHex())
+    m.find(".tx_hash").val(tx.getId())
+    if (!gangsta.transactions['tmp'].hasOwnProperty('pushed')) {
+        m.find('.txHash').removeClass('hidden')
+        m.find('.txResponse').addClass('hidden')
+        m.find('.pos_response').addClass('hidden')
+        m.find('.neg_response').addClass('hidden')
+        m.find('.pos_response_tx1').find('span').text('')
+        m.find('.pos_response_tx1').find('a').attr('href', '#')
+        m.find('.pos_response_tx2').find('span').text('')
+        m.find('.pos_response_tx2').find('a').attr('href', '#')
+        gangsta.decode_tx(tx.toHex(), decode_cb, decode_eb)
+        m.find(".pushTx").on('click', function() {
+            if (!gangsta.data['backend_available']) return false
+            gangsta.push_tx(tx.toHex(), push_cb, push_eb)
+        })
+    }
+}
+
 $(".openTx").on('click', function() {
     $('.editTransactionTab_btn').click()
 })
@@ -757,7 +824,8 @@ $(".force_check").on( "click", function( e ) {
 
 
 gangsta.handleErrors = function(e) {
-    alert(errs[e])
+    console.log(e)
+    if (gangsta.debug) gangsta.errors.push(e) // debug
     // todo
 }
 gangsta.init()
