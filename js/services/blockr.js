@@ -1,7 +1,7 @@
 // gangsta - github.com/gdassori/gangsta
 // blockr service file
 // module is just made with http calls, cause in app.js resource logic is blockr.io compliant
-// when other services are implemented, fetched resource need to be adjust to be compliant as well.
+// when other services are implemented, fetched resource needs to be adjusted to be compliant as well.
 
 service = new Object();
 service.base_url = 'http://btc.blockr.io/api/v1/'; // change to tbtc for testnet

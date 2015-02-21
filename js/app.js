@@ -765,7 +765,7 @@ gangsta.populate_tx_modal = function(tx) {
         m.find('.pos_response_tx2').find('span').text('')
         m.find('.pos_response_tx2').find('a').attr('href', '#')
         gangsta.decode_tx(tx.toHex(), decode_cb, decode_eb)
-        m.find(".pushTx").on('click', function() {
+        m.find(".pushTx").unbind().on('click', function() {
             if (!gangsta.data['backend_available']) return false
             gangsta.push_tx(tx.toHex(), push_cb, push_eb)
         })
