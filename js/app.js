@@ -8,8 +8,8 @@ gangsta.init = function() {
     gangsta.errors = []
     gangsta.wallet = []
     gangsta.transactions = {}
-    gangsta.data = {'flood_alerted': 0, 'backend_available': false}
-
+    gangsta.data = {'flood_alerted': 0, 'backend_available': false, 'service': 'blockr'};
+    requirejs(['/js/services/' + gangsta.data['service'] + '.js'])
 }
 gangsta.validatePubKey = function(addr) {
     try {
@@ -62,6 +62,26 @@ gangsta.populate_wallet = function(cb) {
     else alert('no valid private keys found')
 }
 gangsta.get_wallet_details = function(cb) {
+     var success_cb = function(res) {
+         if (res['status'] == 'success') {
+             var total_balance = 0
+             if (gangsta.wallet.length == 1)  data = [res['data']]
+             else if (gangsta.wallet.length > 1)  data = res['data']
+             $.each(data, function() {
+                 for (var i = 0; i < gangsta.wallet.length; i++) {
+                     if (gangsta.wallet[i]['pub'] == this['address']) {
+                         gangsta.wallet[i]['balance'] = this['balance']
+                         gangsta.wallet[i]['nb_txs'] = this['nb_txs']
+                         break
+                     }
+                 }
+             })
+             if (x == addresses.length && cb) cb()
+             x += 1
+         } else {
+             gangsta.handleErrors('error fetching data')
+         }
+     }
      var addrs_string = ''
      var addresses = []
      var i = 0
@@ -81,37 +101,13 @@ gangsta.get_wallet_details = function(cb) {
      $.each(addresses, function() {
         var addrs = this
         setTimeout(function() {
-             $.ajax('http://btc.blockr.io/api/v1/address/info/' + addrs + '?confirmations=0').success(
-                function(res) {
-                    if (res['status'] == 'success') {
-                        var total_balance = 0
-                        if (gangsta.wallet.length == 1)  data = [res['data'],]
-                        else if (gangsta.wallet.length > 1)  data = res['data']
-                        $.each(data, function() {
-                            for (var i = 0; i < gangsta.wallet.length; i++) {
-                                if (gangsta.wallet[i]['pub'] == this['address']) {
-                                    gangsta.wallet[i]['balance'] = this['balance']
-                                    gangsta.wallet[i]['nb_txs'] = this['nb_txs']
-                                    break
-                                }
-                            }
-                        })
-                        if (x == addresses.length && cb) cb()
-                        x += 1
-                    } else {
-                        gangsta.handleErrors('error fetching data')
-                    }
-                }
-            ).error(function(e) {
-                gangsta.handleErrors(e)
-            })
-        }, i * 1000)
+            service.get_wallet_details(addrs).then(success_cb, gangsta.handleErrors)
+        }, i * 1000);
         i += 1
     })
 }
 gangsta.get_current_block = function() {
-    var url = 'http://btc.blockr.io/api/v1/block/info/last'
-    $.ajax(url).success(function(res) {
+    var success_cb = function(res) {
         if (res['status'] == 'success') {
             var prev_block = gangsta.data['current_block']
             gangsta.data['current_block'] = res['data']['nb']
@@ -128,10 +124,9 @@ gangsta.get_current_block = function() {
         else {
             gangsta.handleErrors('error fetching block: ' + res)
         }
-    }).error(function(e) {
-        gangsta.handleErrors(e)
-    })
-}
+    };
+    service.get_current_block().then(success_cb, gangsta.handleErrors);
+};
 gangsta.on_new_block = function() {
     console.log('new block')
     var addrs = gangsta.addresses_with_unconfirmed_txs()
@@ -223,57 +218,52 @@ gangsta.get_transactions = function(addrs, cb) {
     $.each(addresses, function() {
         var addrs = this
         setTimeout(function() {
-            var parseDataElement = function(data) {
-                var addr = data['address']
-                if (data.hasOwnProperty('unconfirmed')) {
-                    $.each(data['unconfirmed'], function() {
-                        gangsta.drop_transaction_from_wallet(addr, this['tx'])
-                        gangsta.wallet[gangsta.getAddressIndex(addr)]['transactions'].push({'tx': this['tx'], 'confirms': 0, 'amount': this['amount'], 'time': parseInt(new Date(this['time_utc']).getTime()/1000)})
-                    })
-                } else if (data.hasOwnProperty('txs')) {
-                    $.each(data['txs'], function() {
-                        gangsta.drop_transaction_from_wallet(addr, this['tx'])
-                        gangsta.wallet[gangsta.getAddressIndex(addr)]['transactions'].push({'tx': this['tx'], 'confirms': this['confirmations'], 'amount': this['amount'], 'time': parseInt(new Date(this['time_utc']).getTime()/1000)})
-                    })
+            var success_cb = function(res) {
+                var parseDataElement = function(data) {
+                    var addr = data['address']
+                    if (data.hasOwnProperty('unconfirmed')) {
+                        $.each(data['unconfirmed'], function() {
+                            gangsta.drop_transaction_from_wallet(addr, this['tx'])
+                            gangsta.wallet[gangsta.getAddressIndex(addr)]['transactions'].push({'tx': this['tx'], 'confirms': 0, 'amount': this['amount'], 'time': parseInt(new Date(this['time_utc']).getTime()/1000)})
+                        })
+                    } else if (data.hasOwnProperty('txs')) {
+                        $.each(data['txs'], function() {
+                            gangsta.drop_transaction_from_wallet(addr, this['tx'])
+                            gangsta.wallet[gangsta.getAddressIndex(addr)]['transactions'].push({'tx': this['tx'], 'confirms': this['confirmations'], 'amount': this['amount'], 'time': parseInt(new Date(this['time_utc']).getTime()/1000)})
+                        })
+                    }
+                }
+                if (res['status'] == 'success') {
+                    if (addrs_with_txs.length > 1) {
+                        $.each(res['data'], function() {
+                            parseDataElement(this)
+                        })
+                    } else {
+                        parseDataElement(res['data'])
+                    }
+                    if (x == addresses.length*2 && cb) cb()
+                    x += 1
+                } else {
+                    gangsta.handleErrors(res)
                 }
             }
-            var urls = ['http://btc.blockr.io/api/v1/address/unconfirmed/'+String(addrs), 'http://btc.blockr.io/api/v1/address/txs/'+String(addrs)]
-            // first load, double call for initial misunderstanding of blockr API
-            $.each(urls, function() {
-                $.ajax({'url': this, 'async': false}).success(function(res) {
-                    if (res['status'] == 'success') {
-                        if (addrs_with_txs.length > 1) {
-                            $.each(res['data'], function() {
-                                parseDataElement(this)
-                            })
-                        } else {
-                            parseDataElement(res['data'])
-                        }
-                        if (x == addresses.length*2 && cb) cb()
-                        x += 1
-                    } else {
-                        gangsta.handleErrors('error fetch txs ' + this)
-                    }
-                })
-            })
+            service.get_txs(addrs).then(success_cb, gangsta.handleErrors);
+            service.get_unconfirmed_txs(addrs).then(success_cb, gangsta.handleErrors)
         }, i * 2000)
         i += 1
     })
 };
 gangsta.get_tx = function(txid, cb) {
-    url = 'http://btc.blockr.io/api/v1/tx/info/'
-    $.ajax({'url': url + txid}).success(function(res) {
-        console.log(res)
+    var success_cb = function(res) {
         if (res['status'] == 'success') {
-            var prev_tx = gangsta.transactions[txid]
+            var prev_tx = gangsta.transactions[txid];
             gangsta.transactions[txid] = {'at_block': gangsta.data['current_block'], 'transaction': res }
             if (cb) cb()
         } else {
             gangsta.handleErrors('error on fetched data for transaction: ' + res)
         }
-    }).error(function(e) {
-        gangsta.handleErrors('error fetching transaction: ' + e)
-    })
+    };
+    service.get_tx(txid).then(success_cb, gangsta.handleErrors)
 }
 gangsta.check_unconfirmed_on_addresses = function(single_call) {
     // loop looking for new txs
@@ -297,7 +287,7 @@ gangsta.check_unconfirmed_on_addresses = function(single_call) {
     $.each(addresses, function() {
          var addrs = this
          setTimeout(function() {
-            $.ajax('http://btc.blockr.io/api/v1/address/unconfirmed/'+String(addrs)).success(function(res) {
+            var success_cb = function() {
                 if (res['status'] == 'success') {
                     var fetched_unconfirmed = []
                     if (addrs.length > 1) {
@@ -347,9 +337,8 @@ gangsta.check_unconfirmed_on_addresses = function(single_call) {
                  } else {
                     gangsta.handleErrors(data)
                 }
-            }).error(function(res) {
-                gangsta.handleErrors(res)
-            })
+            };
+            service.get_unconfirmed_txs(addrs).then(success_cb, gangsta.handleErrors)
          }, i * 3000)
          i += 1
     })
