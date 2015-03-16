@@ -8,8 +8,8 @@ gangsta.init = function() {
     gangsta.errors = []
     gangsta.wallet = []
     gangsta.transactions = {}
-    gangsta.data = {'flood_alerted': 0, 'backend_available': false, 'service': 'blockr'};
-    requirejs(['/js/services/' + gangsta.data['service'] + '.js'])
+    gangsta.data = {'flood_alerted': 0, 'backend_available': false, 'wallet_service': 'blockr'};
+    requirejs(['/js/services/' + gangsta.data['wallet_service'] + '.js'])
 }
 gangsta.validatePubKey = function(addr) {
     try {
@@ -101,7 +101,7 @@ gangsta.get_wallet_details = function(cb) {
      $.each(addresses, function() {
         var addrs = this
         setTimeout(function() {
-            service.get_wallet_details(addrs).then(success_cb, gangsta.handleErrors)
+            wallet_service.get_wallet_details(addrs).then(success_cb, gangsta.handleErrors)
         }, i * 1000);
         i += 1
     })
@@ -125,7 +125,7 @@ gangsta.get_current_block = function() {
             gangsta.handleErrors('error fetching block: ' + res)
         }
     };
-    service.get_current_block().then(success_cb, gangsta.handleErrors);
+    wallet_service.get_current_block().then(success_cb, gangsta.handleErrors);
 };
 gangsta.on_new_block = function() {
     console.log('new block')
@@ -247,8 +247,8 @@ gangsta.get_transactions = function(addrs, cb) {
                     gangsta.handleErrors(res)
                 }
             }
-            service.get_txs(addrs).then(success_cb, gangsta.handleErrors);
-            service.get_unconfirmed_txs(addrs).then(success_cb, gangsta.handleErrors)
+            wallet_service.get_txs(addrs).then(success_cb, gangsta.handleErrors);
+            wallet_service.get_unconfirmed_txs(addrs).then(success_cb, gangsta.handleErrors)
         }, i * 2000)
         i += 1
     })
@@ -263,7 +263,7 @@ gangsta.get_tx = function(txid, cb) {
             gangsta.handleErrors('error on fetched data for transaction: ' + res)
         }
     };
-    service.get_tx(txid).then(success_cb, gangsta.handleErrors)
+    wallet_service.get_tx(txid).then(success_cb, gangsta.handleErrors)
 }
 gangsta.check_unconfirmed_on_addresses = function(single_call) {
     // loop looking for new txs
@@ -338,7 +338,7 @@ gangsta.check_unconfirmed_on_addresses = function(single_call) {
                     gangsta.handleErrors(data)
                 }
             };
-            service.get_unconfirmed_txs(addrs).then(success_cb, gangsta.handleErrors)
+            wallet_service.get_unconfirmed_txs(addrs).then(success_cb, gangsta.handleErrors)
          }, i * 3000)
          i += 1
     })
