@@ -287,7 +287,7 @@ gangsta.check_unconfirmed_on_addresses = function(single_call) {
     $.each(addresses, function() {
          var addrs = this
          setTimeout(function() {
-            var success_cb = function() {
+            var success_cb = function(res) {
                 if (res['status'] == 'success') {
                     var fetched_unconfirmed = []
                     if (addrs.length > 1) {
@@ -391,6 +391,7 @@ gangsta.apply_editor_logic = function(txid, container, avail_bkp) {
         })
         var available = parseFloat(avail)*100000000
         fee = parseFloat($(this).val())*100000000
+        restore_changes(txid)
         console.log(fee)
         if (isNaN(fee) || fee < gangsta.transactions['tmp']['transaction']['data']['fee'] || fee > available) {
             $(this).parent().addClass('has-error')
@@ -407,7 +408,7 @@ gangsta.apply_editor_logic = function(txid, container, avail_bkp) {
                     edit_change(Number(this[0]), 0)
                 }
             })
-            container.find('.tx_available').text((parseFloat(container.find('.tx_available').text()) - parseFloat($(this).val())).toFixed(8))
+            container.find('.tx_available').text((parseFloat(gangsta.transactions['tmp']['available']) - parseFloat($(this).val())).toFixed(8))
         }
     })
     container.find(".input_addr").unbind().on('change', function() {
@@ -737,7 +738,7 @@ gangsta.populate_tx_modal = function(tx) {
         m.find('.pos_response_tx1').find('span').text(gangsta.transactions['tmp']['transaction']['data']['tx'])
         m.find('.pos_response_tx1').find('a').attr('href', 'http://blockchain.info/tx/'+gangsta.transactions['tmp']['transaction']['data']['tx'])
         m.find('.pos_response_tx2').find('span').text(txid)
-        m.find('.pos_response_tx2').find('a').attr('href', 'http://blockchain.info/tx/info/'+txid)
+        m.find('.pos_response_tx2').find('a').attr('href', 'http://blockchain.info/tx/'+txid)
         m.find(".pushTx").attr('disabled', true)
     }
     push_eb = function(e) {
