@@ -474,7 +474,7 @@ gangsta.sign_tx = function(txdict) {
 gangsta.decode_tx = function(rawtx, cb, eb) {
     console.log(rawtx)
     //todo: js decoder
-    $.ajax({type: 'POST', url: 'http://gangsta.strangled.net/decodeTx/', data: {"rawtx": rawtx}}).success(function(res) {
+    $.ajax({type: 'POST', url: 'decodeTx/', data: {"rawtx": rawtx}}).success(function(res) {
         console.log(res)
         if (res['status'] == 'success') {
             cb(res)
@@ -487,7 +487,7 @@ gangsta.decode_tx = function(rawtx, cb, eb) {
 }
 gangsta.push_tx = function(rawtx, cb, eb) {
     console.log(rawtx)
-    $.ajax({type: 'POST', url: 'http://gangsta.strangled.net/pushTx/', data: {"rawtx": rawtx}}).success(function(res) {
+    $.ajax({type: 'POST', url: 'pushTx/', data: {"rawtx": rawtx}}).success(function(res) {
         console.log(res)
         if (res['status'] == 'success') {
             cb(res['txid'])
