@@ -9,7 +9,7 @@ gangsta.init = function() {
     gangsta.wallet = []
     gangsta.transactions = {}
     gangsta.data = {'flood_alerted': 0, 'backend_available': false, 'wallet_service': 'blockr'};
-    requirejs(['/js/services/' + gangsta.data['wallet_service'] + '.js'])
+    requirejs(['js/services/' + gangsta.data['wallet_service'] + '.js'])
 }
 gangsta.validatePubKey = function(addr) {
     try {
