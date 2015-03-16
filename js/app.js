@@ -738,7 +738,7 @@ gangsta.populate_tx_modal = function(tx) {
         m.find('.pos_response_tx1').find('span').text(gangsta.transactions['tmp']['transaction']['data']['tx'])
         m.find('.pos_response_tx1').find('a').attr('href', 'http://blockchain.info/tx/'+gangsta.transactions['tmp']['transaction']['data']['tx'])
         m.find('.pos_response_tx2').find('span').text(txid)
-        m.find('.pos_response_tx2').find('a').attr('href', 'http://blockchain.info/tx/info/'+txid)
+        m.find('.pos_response_tx2').find('a').attr('href', 'http://blockchain.info/tx/'+txid)
         m.find(".pushTx").attr('disabled', true)
     }
     push_eb = function(e) {
