@@ -3,7 +3,7 @@ bitcoin replace-by-fee double spend tool
 
 gangsta, bitcoin double spend tool aimed to work with replace-by-fee patched nodes
 
-demo: http://gangsta.strangled.net/ (hosted code is NOT SAFE, DO NOT PASTE important private keys into a non-safe environment, you could expect losses)
+demo: http://gangsta.dassori.me/ (hosted code is NOT SAFE, DO NOT PASTE important private keys into a non-safe environment, you could expect losses)
 
 Todo:
 - about & FAQ
